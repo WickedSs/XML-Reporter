@@ -17,7 +17,7 @@ class PDF:
         registerFont(TTFont("Arial", os.path.join(BASE_DIR, "fonts", f"Arial.ttf")))
 
     def create_pdf(self, filename: str):
-        self.path = os.path.join(BASE_DIR, "pdfs", f"{filename}.pdf")
+        self.path = os.path.join(BASE_DIR, "pdfs", f"test01.pdf")
         self.pdf = canvas.Canvas(self.path, pagesize=letter)
         # self.pdf.translate(0, self.height)
 

@@ -95,4 +95,4 @@ class Generator:
     
 
 reporter = Generator()
-reporter.run("Asma01.jrxml")
+reporter.run("NoName-M02.jrxml")
