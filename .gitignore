@@ -1,2 +1,3 @@
 *.jrxml
 *.pyc
+*.gitignore
