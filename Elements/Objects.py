@@ -3,11 +3,36 @@ import re
 
 
 class Util:
-    def coord(x, y, width, height, current_height, margin, size):
-        position_x = ((margin[2] * 2) + x)
-        position_y = (size[1] - 50 - (margin[2] * 2) - y) - current_height
-        # print(x, y, position_x, position_y, current_height)
+
+    def calculate_alignment(rect_width, text_width, alignement):
+        match alignement:
+            case "Center":
+                return (rect_width - text_width) / 2
+            case "Left":
+                return 0 
+            case "Right":
+                return rect_width - text_width
+            case _:
+                return 2
+
+    def hex_to_RGB(hex_value):
+        return tuple(int(hex_value[i:i+2], 16) for i in (0, 2, 4))
+
+    def coord(x, y, current_height, margin):
+        position_x = ((margin[2] + margin[2] * 0.5) + x)
+        position_y = (margin[2]) + y + current_height
         return position_x, position_y
+
+    def format_currency(amount):
+        return f"{float(amount):,.2f}"
+
+    def new_page(x, y, jasperAttrib, jasperMargin, canvas):
+        if y >= int(jasperAttrib.get("pageHeight")) - jasperMargin[2]:
+            canvas.new_page()
+            x, y = Util.coord(x, jasperMargin[0], 0, jasperMargin)
+            return x, y
+        
+        return x, y
 
 
 
@@ -61,9 +86,12 @@ class Text(object):
 
 class textFieldExpression(object):
     expression = None
+    expression_type = None
+
     def fetch(self, element, url):
         text_Field_Expression = element.find(f"{url}textFieldExpression")
         if text_Field_Expression != None:
-            self.expression = re.findall(r'{(.+?)}', str(text_Field_Expression.text))
+            self.expression_type = "field" if "$F" in text_Field_Expression.text else "parameter"
+            self.expression = re.findall(r'{(.+?)}', str(text_Field_Expression.text))[0]
 
         return self
