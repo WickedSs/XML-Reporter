@@ -136,12 +136,12 @@ class JasperReport:
                 element.prepare(canvas=self.pdf, section=section, jasperAttrib=self.attrib, jasperMargin=self.document_margin, jasperParameters=self.paramaters_values, current_v_position=current_v_position)
                 if element.name in ["StaticText", "TextField"]:
                     self.pdf.pdf_canvas.drawString(element.x + element.indentation, element.y, element.text_value, None, 0, None, None)
-                    print(f"{element.name, element.x, element.y, self.height - self.document_margin[0]} {element.text_value}")
+                    # print(f"{element.name, element.x, element.y, self.height - self.document_margin[0]} {element.text_value}")
                 elif element.name in ["Rectangle"]:
                     self.pdf.pdf_canvas.roundRect(element.x, element.y, element.width, element.height, float(element.radius) if element.radius else 0, ceil(element.stroke), element.fill)
                 
             current_v_position += int(section.section_band_attrib.get("height") or 0)
-        # self.pdf.show_page()
+
         self.pdf.save_pdf()
 
     def run(self, filename):
@@ -196,4 +196,4 @@ fields = [
     { "product_name" : "Fourth Product", "quantity" : "6", "price": "100", "total" : str(1200 * 10), "reference" : ""},
 ]
 reporter = JasperReport(parameters=paramaters, fields=fields)
-reporter.run("NoName-M02.jrxml")
+reporter.run("NoName-M01.jrxml")

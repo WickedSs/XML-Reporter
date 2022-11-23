@@ -34,6 +34,13 @@ class Util:
         
         return x, y
 
+    def isFloat(value):
+        try:
+            value = float(value)
+            return True
+        except ValueError:
+            return False
+
 
 
 class ReportElement(object):
@@ -87,11 +94,13 @@ class Text(object):
 class textFieldExpression(object):
     expression = None
     expression_type = None
+    expression_operation = None
 
     def fetch(self, element, url):
         text_Field_Expression = element.find(f"{url}textFieldExpression")
         if text_Field_Expression != None:
             self.expression_type = "field" if "$F" in text_Field_Expression.text else "parameter"
-            self.expression = re.findall(r'{(.+?)}', str(text_Field_Expression.text))[0]
+            self.expression = re.findall(r'{(.+?)}', str(text_Field_Expression.text))
+            self.expression_operation = [c for c in str(text_Field_Expression.text) if c in '+-/*']
 
         return self

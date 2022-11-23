@@ -1,6 +1,6 @@
 from elements.Objects import *
 from typing import Any, Union
-from math import ceil
+from math import ceil, prod
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph
@@ -72,18 +72,41 @@ class TextField(Util, ReportElement, TextElement, textFieldExpression):
         
         self.text_value = ""
         if text_expression.expression_type == "parameter":
-            parameter = jasperParameters.get(text_expression.expression)
+            parameter = jasperParameters.get(text_expression.expression[0])
             if parameter != None:
                 self.text_value = parameter
         else:
-            field = section.fields.get(text_expression.expression)
-            # print(f"[{text_expression.expression_type}] {text_expression.expression} {field}")
-            if field != None:
-                self.text_value = field
+            values = []
+            for exp in text_expression.expression:
+                field = section.fields.get(exp)
+                if field != None:
+                    values.append(field)
 
-        if text_expression.expression in ["price", "total", "FactureTVA", "FactureTotal"]:
+            values = [float(val) if Util.isFloat(val) else val for val in values]
+            operation = text_expression.expression_operation[0] if text_expression.expression_operation else ""
+            match operation:
+                case "*":
+                    self.text_value = prod(values)
+                case "+":
+                    self.text_value = sum(values)
+                case "-":
+                    self.text_value = values[0] - sum(values[1:])
+                case "/":
+                    self.text_value = values[0] - values[1]
+                case _:
+                    self.text_value = values[0] if len(values) > 0 else 0
+        
+        # print(f"[TextField] {text_expression.expression} {text_expression.expression_operation} {self.text_value}")
+        self.text_value = str(self.text_value)
+        
+        print(f"{text_expression.expression}")
+        if all(item in ["price", "total", "FactureTVA", "FactureTotal"] for item in text_expression.expression):
             self.text_value = str(Util.format_currency(self.text_value))
+        
+        if all(item in ["quantity"] for item in text_expression.expression):
+            self.text_value = str(int(float(self.text_value)))
 
+        print(f"{text_expression.expression} {text_expression.expression_operation} {self.text_value}")
         x = int(coords_element.coords.get("x"))
         y = int(coords_element.coords.get("y"))
         self.width = int(coords_element.coords.get("width"))
