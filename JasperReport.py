@@ -87,7 +87,7 @@ class JasperReport:
         self.sections = []
 
     def open_file(self, filename: str):
-        file_path = os.path.join(BASE_DIR, "reports", filename)
+        file_path = os.path.join(BASE_DIR, "templates", filename)
         return ET.parse(file_path).getroot()
 
     def get_url_suffix(self):
